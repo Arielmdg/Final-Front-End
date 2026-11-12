@@ -21,7 +21,9 @@ import {
   BookOpenCheck,
   ShieldCheck,
   CalendarCheck2,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "./context/AuthContext";
 
 /* ========================================
    NAVIGATION DATA
@@ -56,6 +58,7 @@ function Sidebar({
   setActivePage,
   mobileMenuOpen,
   setMobileMenuOpen,
+  student,
   mobile = false,
 }) {
   const sidebarClass = mobile
@@ -69,9 +72,11 @@ function Sidebar({
     setMobileMenuOpen(false);
   }
 
+  const studentName = student?.nama || "Mahasiswa";
+  const studentInitial = studentName.charAt(0).toUpperCase();
+
   return (
     <aside className={sidebarClass}>
-      {/* BRAND */}
       <div className="flex h-20 items-center justify-between border-b border-slate-100 px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#176B53] text-white shadow-lg shadow-green-900/10">
@@ -99,7 +104,6 @@ function Sidebar({
         )}
       </div>
 
-      {/* NAVIGATION */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         {navigationGroups.map((group) => (
           <div key={group.title} className="mb-8">
@@ -136,7 +140,6 @@ function Sidebar({
         ))}
       </div>
 
-      {/* HELP CARD */}
       <div className="border-t border-slate-100 p-4">
         <div className="mb-4 rounded-2xl bg-[#F4F7F5] p-4">
           <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#176B53]">
@@ -161,16 +164,16 @@ function Sidebar({
         </div>
 
         <div className="flex items-center gap-3 rounded-xl px-2 py-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EAF3EF] text-sm font-bold text-[#176B53]">
-            M
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EAF3EF] text-sm font-bold text-[#176B53]">
+            {studentInitial}
           </div>
 
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-slate-700">
-              Mahasiswa
+              {studentName}
             </p>
-            <p className="text-xs text-slate-400">
-              Portal Mahasiswa
+            <p className="truncate text-xs text-slate-400">
+              {student?.nim || "Portal Mahasiswa"}
             </p>
           </div>
         </div>
@@ -234,7 +237,6 @@ function Dashboard({ setActivePage }) {
 
   return (
     <div className="space-y-6">
-      {/* WELCOME BANNER */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#174B3D] to-[#10382F] p-6 text-white shadow-lg shadow-green-950/10 sm:p-8">
         <div className="relative z-10 max-w-xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-semibold tracking-wide text-green-50">
@@ -264,7 +266,6 @@ function Dashboard({ setActivePage }) {
         <div className="pointer-events-none absolute -bottom-36 right-20 h-72 w-72 rounded-full border-[35px] border-white/5" />
       </section>
 
-      {/* STATISTICS */}
       <section>
         <div className="mb-4">
           <h3 className="text-base font-bold text-slate-800">
@@ -282,15 +283,11 @@ function Dashboard({ setActivePage }) {
         </div>
       </section>
 
-      {/* MAIN CONTENT */}
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-5">
-        {/* KRS */}
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm shadow-slate-200/30 xl:col-span-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-800">
-                Ringkasan KRS
-              </h3>
+              <h3 className="font-bold text-slate-800">Ringkasan KRS</h3>
               <p className="mt-1 text-xs text-slate-400">
                 Informasi rencana studi semester aktif.
               </p>
@@ -324,13 +321,10 @@ function Dashboard({ setActivePage }) {
           </div>
         </div>
 
-        {/* SCHEDULE */}
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm shadow-slate-200/30 xl:col-span-2">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-800">
-                Jadwal Kuliah
-              </h3>
+              <h3 className="font-bold text-slate-800">Jadwal Kuliah</h3>
               <p className="mt-1 text-xs text-slate-400">
                 Agenda perkuliahan mahasiswa.
               </p>
@@ -364,7 +358,6 @@ function Dashboard({ setActivePage }) {
         </div>
       </section>
 
-      {/* ADDITIONAL SERVICES */}
       <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm shadow-slate-200/30">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
@@ -411,7 +404,6 @@ function Dashboard({ setActivePage }) {
         </div>
       </section>
 
-      {/* DATA NOTICE */}
       <div className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50/70 p-4">
         <MapPin size={17} className="mt-0.5 shrink-0 text-amber-600" />
         <p className="text-xs leading-relaxed text-amber-800">
@@ -431,6 +423,12 @@ function App() {
   const [activePage, setActivePage] = useState("Dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const { student, logout } = useAuth();
+
+  const studentName = student?.nama || "Mahasiswa";
+  const studentInitial = studentName.charAt(0).toUpperCase();
 
   const pageDescriptions = {
     "Pengisian KRS":
@@ -449,9 +447,22 @@ function App() {
       "Temukan panduan penggunaan layanan portal akademik.",
   };
 
+  async function handleLogout() {
+    const confirmed = window.confirm("Apakah kamu yakin ingin keluar dari akun?");
+    if (!confirmed) return;
+
+    try {
+      setLoggingOut(true);
+      await logout();
+    } catch (error) {
+      console.error("Gagal logout:", error);
+      window.alert("Gagal keluar dari akun. Silakan coba kembali.");
+      setLoggingOut(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F6F8F7] text-slate-800">
-      {/* MOBILE OVERLAY */}
       {mobileMenuOpen && (
         <button
           aria-label="Tutup menu"
@@ -460,10 +471,10 @@ function App() {
         />
       )}
 
-      {/* SIDEBARS */}
       <Sidebar
         activePage={activePage}
         setActivePage={setActivePage}
+        student={student}
       />
 
       <Sidebar
@@ -471,12 +482,11 @@ function App() {
         setActivePage={setActivePage}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
+        student={student}
         mobile
       />
 
-      {/* MAIN AREA */}
       <div className="min-h-screen lg:pl-64">
-        {/* TOPBAR */}
         <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-slate-100 bg-white/90 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <button
@@ -527,22 +537,31 @@ function App() {
 
             <div className="hidden items-center gap-3 sm:flex">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EAF3EF] text-sm font-bold text-[#176B53]">
-                M
+                {studentInitial}
               </div>
 
               <div className="hidden xl:block">
                 <p className="text-xs font-bold text-slate-700">
-                  Mahasiswa
+                  {studentName}
                 </p>
                 <p className="mt-0.5 text-[10px] text-slate-400">
-                  Portal Mahasiswa
+                  {student?.nim || "Portal Mahasiswa"}
                 </p>
               </div>
             </div>
+
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              title="Keluar dari akun"
+              aria-label="Keluar dari akun"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-500 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
         <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           {activePage === "Dashboard" ? (
             <Dashboard setActivePage={setActivePage} />
